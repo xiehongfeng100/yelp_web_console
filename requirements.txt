@@ -1,2 +1,4 @@
 Django==1.11.12
+djangorestframework==3.8.2
+django-cors-headers==2.2.0
 kafka-python==1.4.2
