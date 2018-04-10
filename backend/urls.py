@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from rest_framework import routers
-from views import PersonViewSet
+import views as custom_views
 
 router = routers.DefaultRouter()
-router.register(r'persons', PersonViewSet, base_name='person')
+router.register(r'photos', custom_views.PhotoViewSet, base_name='photo')
 
 urlpatterns = router.urls

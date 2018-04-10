@@ -3,10 +3,12 @@ from __future__ import unicode_literals
 
 from rest_framework import viewsets
 
-from models import Person
-from serializers import PersonSerializer
+import models as custom_models
+import serializers as custom_serializers
 
 
-class PersonViewSet(viewsets.ModelViewSet):
-    queryset = Person.objects.all()
-    serializer_class = PersonSerializer
+class PhotoViewSet(viewsets.ModelViewSet):
+    queryset = custom_models.Photo.objects.all()
+    serializer_class = custom_serializers.PhotoSerializer
+    http_method_names = ['get', 'head']
+    filter_fields = ('id',)
