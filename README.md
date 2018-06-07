@@ -1,2 +1,2 @@
-# yelp_web_console
+# yelper_web_console
 Yelp recomendation web console.
