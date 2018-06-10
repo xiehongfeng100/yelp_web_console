@@ -59,8 +59,8 @@ class Review(models.Model):
     cool = models.IntegerField()
 
 
-# class Photo(models.Model):
-#     photo_id = models.CharField(max_length=22)
-#     business_id = models.ForeignKey(Business)
-#     caption = models.CharField(max_length=255, default=None)
-#     label = models.CharField(max_length=255, default=None)
+class Photo(models.Model):
+    photo_id = models.CharField(max_length=22)
+    business = models.ForeignKey(Business)
+    caption = models.CharField(max_length=255, default=None)
+    label = models.CharField(max_length=255, default=None)

@@ -35,8 +35,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     filter_fields = ()
 
 
-# class PhotoViewSet(viewsets.ModelViewSet):
-#     queryset = custom_models.Photo.objects.all()
-#     serializer_class = custom_serializers.PhotoSerializer
-#     http_method_names = ['get', 'head']
-#     filter_fields = ('id',)
+class PhotoViewSet(viewsets.ModelViewSet):
+    queryset = custom_models.Photo.objects.all()
+    serializer_class = custom_serializers.PhotoSerializer
+    http_method_names = ['get', 'head']
+    filter_fields = ('id',)

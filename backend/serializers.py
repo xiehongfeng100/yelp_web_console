@@ -28,7 +28,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# class PhotoSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = custom_models.Photo
-#         fields = '__all__'
+class PhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = custom_models.Photo
+        fields = '__all__'
