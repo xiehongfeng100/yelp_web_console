@@ -1,6 +1,6 @@
 # frontend
 
-> yelp_web_console
+> Yelper Frontend
 
 ## Build Setup
 

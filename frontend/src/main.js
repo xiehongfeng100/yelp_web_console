@@ -3,6 +3,11 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import 'jquery/dist/jquery'
+import 'popper.js/dist/popper'
+import 'font-awesome/css/font-awesome.css'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/js/bootstrap'
 
 Vue.config.productionTip = false
 
