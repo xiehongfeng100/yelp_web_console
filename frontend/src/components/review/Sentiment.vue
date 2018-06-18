@@ -60,15 +60,15 @@
                     <div class="card-body">
                       <div v-if="review.scrollable">
                         <p class="card-p pre-scrollable">
-                          {{ review.text }}
+                          {{ review.review_text }}
                         </p>
                       </div>
                       <div v-else>
                         <div v-if="review.textLen > wordLimit">
-                          {{ review.text.substr(0, wordLimit + 1) + '...' }}
+                          {{ review.review_text.substr(0, wordLimit + 1) + '...' }}
                         </div>
                         <div v-else>
-                          {{ review.text }}
+                          {{ review.review_text }}
                         </div>
                       </div>
                       <div v-if="review.textLen > wordLimit">
@@ -91,6 +91,7 @@
               </div>
             </div>
           </div>
+          <v-page :setting="pageSet" @page-change="pageChange"></v-page>
         </div>
       </section>
     </div>
@@ -106,12 +107,15 @@ export default {
   data: function () {
     return {
       loading: false,
-      wordLimit: 200,
+      wordLimit: 150,
       reviews: [],
       pages: [],
-      numOfPages: 0,
-      nextPageURL: '',
-      previousPageURL: ''
+      pageSet: {
+        totalRow: 0,
+        info: true,
+        language: 'en',
+        pageSizeMenu: [12, 16, 20]
+      }
     }
   },
   methods: {
@@ -130,18 +134,23 @@ export default {
       this.$set(this.reviews, review.index, review) // This is one way to update/render DOM accordingly when item changes in a array, plz refer to https://vuejs.org/v2/guide/list.html#Caveats
     },
     getReviews: function (offset = 0, limit = 12) {
+      this.loading = true
       apiService.getReviews(offset, limit).then((page) => {
-        // console.log(page)
+        console.log(page)
         this.reviews = page.results
         for (let [index, review] of this.reviews.entries()) {
           review.index = index
           review.scrollable = false
-          review.textLen = review.text.length
+          review.textLen = review.review_text.length
         }
-        this.numOfPages = page.numpages
-        this.nextPageURL = page.nextlink
-        this.previousPageURL = page.prelink
+        this.pageSet.totalRow = page.count
       })
+      this.loading = false
+    },
+    pageChange: function (pInfo) {
+      let pageSize = pInfo.pageSize
+      let pageNumber = pInfo.pageNumber
+      this.getReviews((pageNumber - 1) * pageSize, pageSize)
     }
   },
   computed: {

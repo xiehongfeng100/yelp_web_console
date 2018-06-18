@@ -25,7 +25,8 @@ class BusinessSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = custom_models.Review
-        fields = '__all__'
+        fields = ('review_id', 'business', 'user', 'text', 'stars', 'sentiment',
+                  'date', 'useful', 'funny', 'cool', 'review_text',)
 
 
 class PhotoSerializer(serializers.ModelSerializer):

@@ -47,16 +47,25 @@ class Business(models.Model):
     is_open = models.IntegerField()
 
 
+class ReviewText(models.Model):
+    text = models.TextField()
+
+
 class Review(models.Model):
     review_id = models.CharField(max_length=22)
     business = models.ForeignKey(Business)
     user = models.ForeignKey(User)
+    text = models.ForeignKey(ReviewText)
     stars = models.IntegerField()
+    sentiment = models.FloatField()
     date = models.DateTimeField()
-    text = models.TextField()
     useful = models.IntegerField()
     funny = models.IntegerField()
     cool = models.IntegerField()
+
+    @property
+    def review_text(self):
+        return self.text.text
 
 
 class Photo(models.Model):
