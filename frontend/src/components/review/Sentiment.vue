@@ -64,14 +64,14 @@
                         </p>
                       </div>
                       <div v-else>
-                        <div v-if="review.text_len > wordLimit">
+                        <div v-if="review.textLen > wordLimit">
                           {{ review.text.substr(0, wordLimit + 1) + '...' }}
                         </div>
                         <div v-else>
-                          {{ review.text.substr(0, wordLimit + 1) }}
+                          {{ review.text }}
                         </div>
                       </div>
-                      <div v-if="review.text_len > wordLimit">
+                      <div v-if="review.textLen > wordLimit">
                         <div v-if="review.scrollable">
                           <button @click="continueReading(review)" class="button button-tiny button-circle"><i
                             class="fa fa-minus"></i></button>
@@ -98,174 +98,20 @@
 
 <script>
 import _ from 'lodash'
+import APIService from '../../utils/apiservice'
+const apiService = new APIService()
+
 export default {
   name: 'review-sentiment',
   data: function () {
     return {
+      loading: false,
       wordLimit: 200,
-      reviews: [{
-        review_id: '',
-        user_id: '',
-        business_id: '',
-        stars: 5.0,
-        sentiment: 4.6,
-        scrollable: false,
-        text: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour.\n',
-        text_len: 100
-      },
-      {
-        review_id: '',
-        user_id: '',
-        business_id: '',
-        stars: 5.0,
-        sentiment: 3.0,
-        scrollable: false,
-        text: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.\n' +
-        '                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.',
-        text_len: 400
-      },
-      {
-        review_id: '',
-        user_id: '',
-        business_id: '',
-        stars: 5.0,
-        sentiment: 1.3,
-        scrollable: false,
-        text: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.\n' +
-        '                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.',
-        text_len: 400
-      },
-      {
-        review_id: '',
-        user_id: '',
-        business_id: '',
-        stars: 5.0,
-        sentiment: 1.3,
-        scrollable: false,
-        text: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.\n' +
-        '                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.',
-        text_len: 400
-      },
-      {
-        review_id: '',
-        user_id: '',
-        business_id: '',
-        stars: 5.0,
-        sentiment: 1.3,
-        scrollable: false,
-        text: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.\n' +
-        '                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.',
-        text_len: 400
-      },
-      {
-        review_id: '',
-        user_id: '',
-        business_id: '',
-        stars: 5.0,
-        sentiment: 1.3,
-        scrollable: false,
-        text: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.\n' +
-        '                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.',
-        text_len: 400
-      },
-      {
-        review_id: '',
-        user_id: '',
-        business_id: '',
-        stars: 5.0,
-        sentiment: 1.3,
-        scrollable: false,
-        text: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.\n' +
-        '                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.',
-        text_len: 400
-      },
-      {
-        review_id: '',
-        user_id: '',
-        business_id: '',
-        stars: 5.0,
-        sentiment: 1.3,
-        scrollable: false,
-        text: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.\n' +
-        '                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.',
-        text_len: 400
-      },
-      {
-        review_id: '',
-        user_id: '',
-        business_id: '',
-        stars: 5.0,
-        sentiment: 1.3,
-        scrollable: false,
-        text: 'There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.\n' +
-        '                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered\n' +
-        '                        alteration in some form, by injected humour,\n' +
-        '                        or randomised words which don\'t look even slightly believable. If you are going to use a passage\n' +
-        '                        of Lorem Ipsum, you need to be sure there\n' +
-        '                        isn\'t anything embarrassing hidden in the middle of text.',
-        text_len: 400
-      }]
+      reviews: [],
+      pages: [],
+      numOfPages: 0,
+      nextPageURL: '',
+      previousPageURL: ''
     }
   },
   methods: {
@@ -279,13 +125,32 @@ export default {
       return result
     },
     continueReading: function (review) {
+      // console.log(review.scrollable)
       review.scrollable = !review.scrollable
+      this.$set(this.reviews, review.index, review) // This is one way to update/render DOM accordingly when item changes in a array, plz refer to https://vuejs.org/v2/guide/list.html#Caveats
+    },
+    getReviews: function (offset = 0, limit = 12) {
+      apiService.getReviews(offset, limit).then((page) => {
+        // console.log(page)
+        this.reviews = page.results
+        for (let [index, review] of this.reviews.entries()) {
+          review.index = index
+          review.scrollable = false
+          review.textLen = review.text.length
+        }
+        this.numOfPages = page.numpages
+        this.nextPageURL = page.nextlink
+        this.previousPageURL = page.prelink
+      })
     }
   },
   computed: {
     reviewChunks: function () {
       return _.chunk(this.reviews, 4)
     }
+  },
+  mounted: function () {
+    this.getReviews()
   }
 }
 </script>
