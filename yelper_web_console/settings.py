@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_filters',
-    'backend'
+    'backend.base',
+    'backend.rank'
 ]
 
 MIDDLEWARE = [
@@ -133,6 +134,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20
 }
+
+
+# Neo4J
+NEO_USERNAME = 'neo4j'
+NEO_PASSWORD = 'admin123'
 
 
 # Static files (CSS, JavaScript, Images)

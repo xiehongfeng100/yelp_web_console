@@ -20,5 +20,6 @@ from django.views.generic import TemplateView
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', TemplateView.as_view(template_name='index.html')),
-    url(r'api/', include('backend.urls', namespace='api'))
+    url(r'api/base/', include('backend.base.urls', namespace='base_api')),
+    url(r'api/rank/', include('backend.rank.urls', namespace='rank_api'))
 ]

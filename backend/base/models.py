@@ -68,6 +68,12 @@ class Review(models.Model):
         return self.text.text
 
 
+class CheckIn(models.Model):
+    business = models.ForeignKey(Business)
+    count = models.IntegerField()
+    date = models.CharField(max_length=64)
+
+
 class Photo(models.Model):
     photo_id = models.CharField(max_length=22)
     business = models.ForeignKey(Business)
