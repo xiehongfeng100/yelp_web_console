@@ -21,3 +21,9 @@ class RankViewset(viewsets.ReadOnlyModelViewSet):
         user = request.query_params['user']
         ret = NEO4J.recommend_by_similarities(user_db_id=user)
         return Response(ret)
+
+    @action(detail=False)
+    def friends(self, request):
+        user = request.query_params['user']
+        ret = NEO4J.recommend_by_friends(user_db_id=user)
+        return Response(ret)
