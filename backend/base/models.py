@@ -53,9 +53,9 @@ class ReviewText(models.Model):
 
 class Review(models.Model):
     review_id = models.CharField(max_length=22)
-    business = models.ForeignKey(Business)
-    user = models.ForeignKey(User)
-    text = models.ForeignKey(ReviewText)
+    business = models.ForeignKey(Business, related_name='reviews')
+    user = models.ForeignKey(User, related_name='reviews')
+    text = models.ForeignKey(ReviewText, related_name='reviews')
     stars = models.IntegerField()
     sentiment = models.FloatField()
     date = models.DateTimeField()
