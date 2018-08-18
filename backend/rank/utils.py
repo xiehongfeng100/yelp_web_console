@@ -19,10 +19,15 @@ class Utils(object):
 
     @classmethod
     def get_biz_sentiment(cls, db_id):
-        return YELP_LV_BIZES[YELP_LV_BIZES.db_id == db_id].sentiment.values[0]
+        return round(YELP_LV_BIZES[YELP_LV_BIZES.db_id == db_id].sentiment.values[0], 2)
 
     @classmethod
     def scale(cls, value, value_range=(0.0, 5.0), feature_range=(0.0, 1.0)):
         # TODO. assert value_range[0] != value_range[1]
         std = float(value - value_range[0]) / (value_range[1] - value_range[0])
         return std * (feature_range[1] - feature_range[0]) + feature_range[0]
+
+    @classmethod
+    def sort_by_value(cls, value, key, reverse=True):
+        # TODO. assert value is a list of dicts
+        return sorted(value, key=lambda item: item[key], reverse=reverse)

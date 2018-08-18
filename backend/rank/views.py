@@ -25,7 +25,7 @@ class RankViewset(viewsets.ReadOnlyModelViewSet):
         bizes = YELP_LV_BIZES[YELP_LV_BIZES.db_id.isin(biz_ids)]
         return [dict(db_id=db_id,
                      name=Utils.get_biz_name_by_id(db_id),
-                     popularity=popularity,
+                     popularity=round(popularity, 2),
                      sentiment=Utils.get_biz_sentiment(db_id),
                      dist=KdTreeUtils.km_between_two_points(lat, lon, lat1, lon1))
                 for db_id, popularity, lat1, lon1 in
@@ -38,7 +38,7 @@ class RankViewset(viewsets.ReadOnlyModelViewSet):
         lon = float(request.query_params['lon'])
         limit = int(request.query_params.get('limit', 10))
         ret = Neo4JUtils.recommend_by_similarities(user, lat, lon, limit=limit)
-        return Response(ret)
+        return Response(Utils.sort_by_value(ret, 'recommendation'))
 
     @action(detail=False)
     def friends(self, request):
@@ -47,7 +47,7 @@ class RankViewset(viewsets.ReadOnlyModelViewSet):
         lon = float(request.query_params['lon'])
         limit = int(request.query_params.get('limit', 10))
         ret = Neo4JUtils.recommend_by_friends(user, lat, lon, limit=limit)
-        return Response(ret)
+        return Response(Utils.sort_by_value(ret, 'recommendation'))
 
     @action(detail=False)
     def popularities(self, request):
@@ -55,7 +55,7 @@ class RankViewset(viewsets.ReadOnlyModelViewSet):
         lon = float(request.query_params['lon'])
         limit = int(request.query_params.get('limit', 10))
         ret = self._recommend_by_popularity(lat, lon, limit=limit)
-        return Response(ret)
+        return Response(Utils.sort_by_value(ret, 'popularity'))
 
     @action(detail=False)
     def dists(self, request):
@@ -63,7 +63,7 @@ class RankViewset(viewsets.ReadOnlyModelViewSet):
         lon = float(request.query_params['lon'])
         limit = int(request.query_params.get('limit', 10))
         ret = KdTreeUtils.query_closest(lat, lon, limit)
-        return Response(ret)
+        return Response(Utils.sort_by_value(ret, 'dist'))
 
     @action(detail=False)
     def search_and_rank(self, request):
@@ -76,8 +76,11 @@ class RankViewset(viewsets.ReadOnlyModelViewSet):
         ret = list()
         if order_by == 'dist':
             ret = SearchUtils.rank_by_distance(keyword, lat, lon, limit=limit)
+            ret = Utils.sort_by_value(ret, 'dist', reverse=False)
         elif order_by == 'sentiment':
             ret = SearchUtils.rank_by_sentiment(keyword, lat, lon, limit=limit)
+            ret = Utils.sort_by_value(ret, 'sentiment')
         elif order_by == 'popularity':
             ret = SearchUtils.rank_by_popularity(keyword, lat, lon, limit=limit)
+            ret = Utils.sort_by_value(ret, 'popularity')
         return Response(ret)

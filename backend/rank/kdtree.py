@@ -74,13 +74,13 @@ class KdTreeUtils(object):
         bizes = YELP_LV_BIZES[YELP_LV_BIZES.index.isin(indexes)]
         return [dict(db_id=db_id,
                      name=Utils.get_biz_name_by_id(db_id),
-                     popularity=popularity,
+                     popularity=round(popularity, 2),
                      sentiment=Utils.get_biz_sentiment(db_id),
-                     dist=d)
+                     dist=round(d, 2))
                 for db_id, popularity, d in zip(bizes.db_id.values, bizes.popularity.values, dist)]
 
     @classmethod
     def km_between_two_points(cls, lat0, lon0, lat1, lon1):
         x0, y0, z0 = _TransformUtils.to_Cartesian(lat0, lon0)
         x1, y1, z1 = _TransformUtils.to_Cartesian(lat1, lon1)
-        return _TransformUtils.distToKM(np.sqrt(np.power(x0 - x1, 2) + np.power(y0 - y1, 2) + np.power(z0 - z1, 2)))
+        return round(_TransformUtils.distToKM(np.sqrt(np.power(x0 - x1, 2) + np.power(y0 - y1, 2) + np.power(z0 - z1, 2))), 2)

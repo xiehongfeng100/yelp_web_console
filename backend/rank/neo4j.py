@@ -32,7 +32,7 @@ class Neo4JUtils(object):
         bizes = YELP_LV_BIZES[YELP_LV_BIZES.db_id.isin(id_data_maps.keys())]
         return [dict(db_id=db_id,
                      name=Utils.get_biz_name_by_id(db_id),
-                     popularity=popularity,
+                     popularity=round(popularity, 2),
                      sentiment=Utils.get_biz_sentiment(db_id),
                      dist=KdTreeUtils.km_between_two_points(lat, lon, lat1, lon1),
                      recommendation=Utils.scale(id_data_maps[db_id]['recommendation']))
@@ -58,7 +58,7 @@ class Neo4JUtils(object):
         bizes = YELP_LV_BIZES[YELP_LV_BIZES.db_id.isin(id_data_maps.keys())]
         return [dict(db_id=db_id,
                      name=Utils.get_biz_name_by_id(db_id),
-                     popularity=popularity,
+                     popularity=round(popularity, 2),
                      sentiment=Utils.get_biz_sentiment(db_id),
                      dist=KdTreeUtils.km_between_two_points(lat, lon, lat1, lon1),
                      recommendation=Utils.scale(id_data_maps[db_id]['recommendation']))

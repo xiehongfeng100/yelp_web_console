@@ -59,7 +59,7 @@ class SearchUtils(object):
         bizes = YELP_LV_BIZES[YELP_LV_BIZES.db_id.isin(bizes)]
         ret = [dict(db_id=db_id,
                     name=Utils.get_biz_name_by_id(db_id),
-                    popularity=popularity,
+                    popularity=round(popularity, 2),
                     sentiment=Utils.get_biz_sentiment(db_id),
                     dist=KdTreeUtils.km_between_two_points(lat, lon, lat1, lon1))
                for db_id, popularity, lat1, lon1 in
