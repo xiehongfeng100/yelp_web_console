@@ -2,17 +2,14 @@
 import pandas as pd
 from backend.base import models as base_models
 
-
-YELP_LV_SENTIMENT = pd.read_csv('dataset/las_vegas_review_text_sentiment_with_db_id.csv')
+YELP_LV_BIZES = pd.read_csv('dataset/las_vegas_businesses.csv')
 
 
 class Utils(object):
 
     @classmethod
     def get_biz_by_id(cls, db_id):
-        qry_result = base_models.Business.objects.filter(id=db_id).first()
-        if not qry_result:
-            raise base_models.Business.DoesNotExist('Business with id %s does not exist.' % db_id)
+        qry_result = base_models.Business.objects.get(pk=db_id)  # Raise on not found
         return qry_result
 
     @classmethod
@@ -21,11 +18,11 @@ class Utils(object):
         return qry_result.name
 
     @classmethod
-    def get_biz_reviews_by_id(cls, db_id):
-        qry_result = cls.get_biz_by_id(db_id)
-        return qry_result.reviews.all()
+    def get_biz_sentiment(cls, db_id):
+        return YELP_LV_BIZES[YELP_LV_BIZES.db_id == db_id].sentiment.values[0]
 
     @classmethod
-    def get_biz_review_ids_by_id(cls, db_id):
-        qry_result = cls.get_biz_reviews_by_id(db_id)
-        return [result.id for result in qry_result]
+    def scale(cls, value, value_range=(0.0, 5.0), feature_range=(0.0, 1.0)):
+        # TODO. assert value_range[0] != value_range[1]
+        std = float(value - value_range[0]) / (value_range[1] - value_range[0])
+        return std * (feature_range[1] - feature_range[0]) + feature_range[0]

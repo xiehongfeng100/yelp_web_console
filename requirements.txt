@@ -4,3 +4,8 @@ django-cors-headers==2.2.0
 django-filter==1.1.0
 kafka-python==1.4.2
 py2neo==4.0.0
+scipy==1.1.0
+numpy==1.14.5
+pandas==0.22.0
+gensim==3.4.0
+elasticsearch==6.3.1

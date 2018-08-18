@@ -8,16 +8,28 @@ from rest_framework.response import Response
 import models as custom_models
 import serializers as custom_serializers
 
-from neo4j import Neo4JResource
-from kdtree import KDTreeUtil
-
-NEO4J = Neo4JResource()
-KDTREEUTIL = KDTreeUtil()
+from neo4j import Neo4JUtils
+from kdtree import KdTreeUtils
+from search import SearchUtils
+from utils import Utils, YELP_LV_BIZES
 
 
 class RankViewset(viewsets.ReadOnlyModelViewSet):
     queryset = custom_models.Rank.objects.all()
     serializer_class = custom_serializers.RankSerializer
+
+    @classmethod
+    def _recommend_by_popularity(cls, lat, lon, limit=10):
+        """ Recommend businesses by its popularity """
+        biz_ids = YELP_LV_BIZES.sort_values('popularity', ascending=False).db_id[:limit].values
+        bizes = YELP_LV_BIZES[YELP_LV_BIZES.db_id.isin(biz_ids)]
+        return [dict(db_id=db_id,
+                     name=Utils.get_biz_name_by_id(db_id),
+                     popularity=popularity,
+                     sentiment=Utils.get_biz_sentiment(db_id),
+                     dist=KdTreeUtils.km_between_two_points(lat, lon, lat1, lon1))
+                for db_id, popularity, lat1, lon1 in
+                zip(bizes.db_id.values, bizes.popularity.values, bizes.latitude.values, bizes.longitude.values)]
 
     @action(detail=False)
     def similarities(self, request):
@@ -25,7 +37,7 @@ class RankViewset(viewsets.ReadOnlyModelViewSet):
         lat = float(request.query_params['lat'])
         lon = float(request.query_params['lon'])
         limit = int(request.query_params.get('limit', 10))
-        ret = NEO4J.recommend_by_similarities(user, lat, lon, limit=limit)
+        ret = Neo4JUtils.recommend_by_similarities(user, lat, lon, limit=limit)
         return Response(ret)
 
     @action(detail=False)
@@ -34,7 +46,15 @@ class RankViewset(viewsets.ReadOnlyModelViewSet):
         lat = float(request.query_params['lat'])
         lon = float(request.query_params['lon'])
         limit = int(request.query_params.get('limit', 10))
-        ret = NEO4J.recommend_by_friends(user, lat, lon, limit=limit)
+        ret = Neo4JUtils.recommend_by_friends(user, lat, lon, limit=limit)
+        return Response(ret)
+
+    @action(detail=False)
+    def popularities(self, request):
+        lat = float(request.query_params['lat'])
+        lon = float(request.query_params['lon'])
+        limit = int(request.query_params.get('limit', 10))
+        ret = self._recommend_by_popularity(lat, lon, limit=limit)
         return Response(ret)
 
     @action(detail=False)
@@ -42,5 +62,22 @@ class RankViewset(viewsets.ReadOnlyModelViewSet):
         lat = float(request.query_params['lat'])
         lon = float(request.query_params['lon'])
         limit = int(request.query_params.get('limit', 10))
-        ret = KDTREEUTIL.query_closest(lat, lon, limit)
+        ret = KdTreeUtils.query_closest(lat, lon, limit)
+        return Response(ret)
+
+    @action(detail=False)
+    def search_and_rank(self, request):
+        order_by = request.query_params.get('order_by', 'dist')
+        keyword = request.query_params['keyword']
+        lat = float(request.query_params['lat'])
+        lon = float(request.query_params['lon'])
+        limit = int(request.query_params.get('limit', 10))
+
+        ret = list()
+        if order_by == 'dist':
+            ret = SearchUtils.rank_by_distance(keyword, lat, lon, limit=limit)
+        elif order_by == 'sentiment':
+            ret = SearchUtils.rank_by_sentiment(keyword, lat, lon, limit=limit)
+        elif order_by == 'popularity':
+            ret = SearchUtils.rank_by_popularity(keyword, lat, lon, limit=limit)
         return Response(ret)

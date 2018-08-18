@@ -137,8 +137,16 @@ REST_FRAMEWORK = {
 
 
 # Neo4J
+NEO_HOST = 'localhost'
+NEO_PORT = 7687
 NEO_USERNAME = 'neo4j'
 NEO_PASSWORD = 'admin123'
+
+# Elastic search
+ES_HOST = 'localhost'
+ES_PORT = 9200
+ES_USERNAME = 'elastic'
+ES_PASSWORD = 'changeme'
 
 
 # Static files (CSS, JavaScript, Images)

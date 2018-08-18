@@ -1,38 +1,14 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-import pandas as pd
+from math import sin, cos
 from scipy import spatial
-
-from math import *
-
-
-YELP_LV_BIZES = pd.read_csv('dataset/las_vegas_business_preprocessed_with_db_id.csv')
+from utils import YELP_LV_BIZES, Utils
 
 
-class KDTreeUtil(object):
+class _TransformUtils(object):
     """
-    Ref: https://github.com/qingkaikong/blog/tree/master/2017_33_kdtree_2_real_distance
+    Codes in this class are taken from https://github.com/qingkaikong/blog/tree/master/2017_33_kdtree_2_real_distance
     """
-
-    def __init__(self):
-        x, y, z = zip(*map(self.to_Cartesian, YELP_LV_BIZES.latitude.values, YELP_LV_BIZES.longitude.values))
-        coordinates = list(zip(x, y, z))
-        self.tree = spatial.cKDTree(coordinates)
-
-    def query_by_dist(self, lat, lon, dist=2):
-        dist = self.kmToDIST(dist)
-        x_ref, y_ref, z_ref = self.to_Cartesian(lat, lon)
-        indexes = self.tree.query_ball_point((x_ref, y_ref, z_ref), dist)
-        bizes = YELP_LV_BIZES[YELP_LV_BIZES.index.isin(indexes)]
-        return bizes.db_id.values.tolist()
-
-    def query_closest(self, lat, lon, limit=10):
-        x_ref, y_ref, z_ref = self.to_Cartesian(lat, lon)
-        dist, indexes = self.tree.query((x_ref, y_ref, z_ref), limit)
-        dist = map(self.distToKM, dist)
-        bizes = YELP_LV_BIZES[YELP_LV_BIZES.index.isin(indexes)]
-        return [dict(db_id=db_id, popularity=popularity, dist=d)
-                for db_id, popularity, d in zip(bizes.db_id.values, bizes.popularity.values, dist)]
 
     @classmethod
     def to_Cartesian(cls, lat, lng):
@@ -81,3 +57,30 @@ class KDTreeUtil(object):
         gamma = 2 * np.arcsin(cls.deg2rad(x / (2 * R)))  # compute the angle of the isosceles triangle
         dist = 2 * R * sin(gamma / 2)  # compute the side of the triangle
         return dist
+
+
+# Initialize a global KdTree
+X, Y, Z = zip(*map(_TransformUtils.to_Cartesian, YELP_LV_BIZES.latitude.values, YELP_LV_BIZES.longitude.values))
+KdTree = spatial.cKDTree(list(zip(X, Y, Z)))
+
+
+class KdTreeUtils(object):
+
+    @classmethod
+    def query_closest(cls, lat, lon, limit=10):
+        x_ref, y_ref, z_ref = _TransformUtils.to_Cartesian(lat, lon)
+        dist, indexes = KdTree.query((x_ref, y_ref, z_ref), limit)
+        dist = map(_TransformUtils.distToKM, dist)
+        bizes = YELP_LV_BIZES[YELP_LV_BIZES.index.isin(indexes)]
+        return [dict(db_id=db_id,
+                     name=Utils.get_biz_name_by_id(db_id),
+                     popularity=popularity,
+                     sentiment=Utils.get_biz_sentiment(db_id),
+                     dist=d)
+                for db_id, popularity, d in zip(bizes.db_id.values, bizes.popularity.values, dist)]
+
+    @classmethod
+    def km_between_two_points(cls, lat0, lon0, lat1, lon1):
+        x0, y0, z0 = _TransformUtils.to_Cartesian(lat0, lon0)
+        x1, y1, z1 = _TransformUtils.to_Cartesian(lat1, lon1)
+        return _TransformUtils.distToKM(np.sqrt(np.power(x0 - x1, 2) + np.power(y0 - y1, 2) + np.power(z0 - z1, 2)))
