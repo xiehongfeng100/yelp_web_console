@@ -17,11 +17,6 @@ export default {
 </script>
 
 <style>
-  @import "assets/css/style.default.css";
-  /*@import "assets/css/style.custom.css";*/
-  /*@import "assets/css/fontastic.css";*/
-  /*@import "assets/css/button.css";*/
-
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
