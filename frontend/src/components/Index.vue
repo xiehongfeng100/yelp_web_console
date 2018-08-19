@@ -11,7 +11,7 @@
                   <h3>搜索</h3>
                   <div>
                     <div>
-                      <input type="text" style="margin-bottom: 7px" v-model="keyword" @keyup.enter="searchAndRank"/>
+                      <input type="text" v-model="keyword" @keyup.enter="searchAndRank"/>
                     </div>
                   </div>
                 </div>
@@ -70,7 +70,12 @@
                   <div class="card">
                     <div class="card-content">
                       <div class="card-body">
-                        <h5>{{ biz.name }}</h5>
+                        <div v-if="biz.name.length > bizNameLimit">
+                          <h5>{{ biz.name.slice(0, bizNameLimit) + '...' }}</h5>
+                        </div>
+                        <div v-else>
+                          <h5>{{ biz.name }}</h5>
+                        </div>
                         <p class="metric">Distance: {{ biz.dist }}</p>
                         <p class="metric">Sentiment: {{ biz.sentiment }}</p>
                         <p class="metric">Popularity: {{ biz.popularity }}</p>
@@ -100,12 +105,16 @@ export default {
       userDbId: 1,
       userLocLat: 36.175,
       userLocLon: -115.136389,
-      // distRange: 2,
+      // Card
       bizes: [],
+      bizNameLimit: 20,
+      // Panel
       panelNumber: 0,
       // Search and Rank
       keyword: 'bbq',
       orderBy: 'dist',
+      // TopN
+      topNBy: 'friends',
       // Style
       orderByWithBorder: 0,
       topNBtnWithFilling: 0
@@ -114,6 +123,11 @@ export default {
   methods: {
     changePanel: function (num = 0) {
       this.panelNumber = num
+      if (num === 0) {
+        this.searchAndRank()
+      } else if (num === 1) {
+        this.getTopN(this.topNBy)
+      }
     },
     changOrderBy: function (orderBy) {
       if (orderBy === 'dist') {
@@ -126,23 +140,24 @@ export default {
       this.orderBy = orderBy
       this.searchAndRank()
     },
-    getTopN: function (type = 'friends', offset = 0, limit = 16) {
-      if (type === 'friends') {
+    getTopN: function (topNBy = 'friends', offset = 0, limit = 16) {
+      this.topNBy = topNBy
+      if (topNBy === 'friends') {
         this.topNBtnWithFilling = 0
         apiService.getTopNByFriends(this.userDbId, this.userLocLat, this.userLocLon, offset, limit).then((page) => {
           this.bizes = page
         })
-      } else if (type === 'similarities') {
+      } else if (topNBy === 'similarities') {
         this.topNBtnWithFilling = 1
         apiService.getTopNBySimilarities(this.userDbId, this.userLocLat, this.userLocLon, offset, limit).then((page) => {
           this.bizes = page
         })
-      } else if (type === 'popularities') {
+      } else if (topNBy === 'popularities') {
         this.topNBtnWithFilling = 2
         apiService.getTopNByPopularities(this.userLocLat, this.userLocLon, offset, limit).then((page) => {
           this.bizes = page
         })
-      } else if (type === 'dists') {
+      } else if (topNBy === 'dists') {
         this.topNBtnWithFilling = 3
         apiService.getTopNByDists(this.userLocLat, this.userLocLon, offset, limit).then((page) => {
           this.bizes = page
@@ -195,10 +210,12 @@ export default {
   }
 
   input[type=text] {
+    outline: none;
     padding: 3px;
-    text-align: center;
+    margin-bottom: 7px;
     border: 0;
     border-bottom: 2px solid salmon;
+    text-align: center;
   }
 
   .card {
